@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ProductApi.Models;
 using ProductApi.Services;
 
@@ -15,12 +15,14 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
+    // GET: api/product
     [HttpGet]
     public IActionResult GetProducts()
     {
         return Ok(_productService.GetAllProducts());
     }
 
+    // GET: api/product/{id}
     [HttpGet("{id}")]
     public IActionResult GetProduct(int id)
     {
@@ -28,20 +30,59 @@ public class ProductController : ControllerBase
 
         if (product == null)
         {
-            return NotFound();
+            return NotFound(new { Message = $"Không tìm thấy sản phẩm với Id = {id}" });
         }
 
         return Ok(product);
     }
 
+    // POST: api/product
     [HttpPost]
     public IActionResult PostProduct(Product product)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         _productService.AddProduct(product);
 
         return CreatedAtAction(
             nameof(GetProduct),
             new { id = product.Id },
             product);
+    }
+
+    // PUT: api/product/{id}
+    [HttpPut("{id}")]
+    public IActionResult PutProduct(int id, Product product)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var result = _productService.UpdateProduct(id, product);
+
+        if (!result)
+        {
+            return NotFound(new { Message = $"Không tìm thấy sản phẩm với Id = {id}" });
+        }
+
+        return NoContent();
+    }
+
+    // DELETE: api/product/{id}
+    [HttpDelete("{id}")]
+    public IActionResult DeleteProduct(int id)
+    {
+        var result = _productService.DeleteProduct(id);
+
+        if (!result)
+        {
+            return NotFound(new { Message = $"Không tìm thấy sản phẩm với Id = {id}" });
+        }
+
+        return NoContent();
     }
 }
