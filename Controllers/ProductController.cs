@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ProductApi.Models;
 
 namespace ProductApi.Controllers;
@@ -24,12 +24,14 @@ public class ProductController : ControllerBase
         }
     ];
 
+    // GET: api/product
     [HttpGet]
     public IActionResult GetProducts()
     {
         return Ok(products);
     }
 
+    // GET: api/product/{id}
     [HttpGet("{id}")]
     public IActionResult GetProduct(int id)
     {
@@ -42,6 +44,8 @@ public class ProductController : ControllerBase
 
         return Ok(product);
     }
+
+    // POST: api/product
     [HttpPost]
     public IActionResult PostProduct(Product product)
     {
@@ -52,7 +56,37 @@ public class ProductController : ControllerBase
             new { id = product.Id },
             product);
     }
+
+    // PUT: api/product/{id}
+    [HttpPut("{id}")]
+    public IActionResult PutProduct(int id, Product product)
+    {
+        var existingProduct = products.FirstOrDefault(x => x.Id == id);
+
+        if (existingProduct == null)
+        {
+            return NotFound();
+        }
+
+        existingProduct.Name = product.Name;
+        existingProduct.Price = product.Price;
+
+        return NoContent();
+    }
+
+    // DELETE: api/product/{id}
+    [HttpDelete("{id}")]
+    public IActionResult DeleteProduct(int id)
+    {
+        var product = products.FirstOrDefault(x => x.Id == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        products.Remove(product);
+
+        return NoContent();
+    }
 }
-    
-
-
